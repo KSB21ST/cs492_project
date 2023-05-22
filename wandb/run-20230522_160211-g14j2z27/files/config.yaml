@@ -1,0 +1,51 @@
+wandb_version: 1
+
+model:
+  desc: null
+  value: DeepQNetwork
+mode:
+  desc: null
+  value: train
+discounting:
+  desc: null
+  value: 0.95
+learning_rate:
+  desc: null
+  value: 0.001
+batch_size:
+  desc: null
+  value: 24
+episodes:
+  desc: null
+  value: 200
+_wandb:
+  desc: null
+  value:
+    code_path: code/train.py
+    python_version: 3.8.10
+    cli_version: 0.15.0
+    framework: keras
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1684738931.893781
+    t:
+      1:
+      - 2
+      - 3
+      - 55
+      2:
+      - 2
+      - 3
+      - 55
+      3:
+      - 3
+      - 8
+      - 16
+      - 23
+      - 35
+      4: 3.8.10
+      5: 0.15.0
+      8:
+      - 5
+      10:
+      - 9
