@@ -59,7 +59,7 @@ class Q_Model(nn.Module):
         pred = self.model(x)
         return pred
         
-class DoubleDeepQNetwork():
+class DeepQNetwork():
     def __init__(self, states, actions, alpha, gamma, epsilon,epsilon_min, epsilon_decay, device='cuda:0'):
         self.nS = states
         self.nA = actions
@@ -72,16 +72,10 @@ class DoubleDeepQNetwork():
         self.epsilon_decay = epsilon_decay
         self.device = device
         self.model = Q_Model(self.nS, self.nA).to(self.device)
-        self.model_target = Q_Model(self.nS, self.nA).to(self.device) #Second (target) neural network
         self.loss_fn = nn.MSELoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr = alpha)
-        self.update_target_from_model() #Update weights
         self.loss = []
         self.q_value_estimate_each_period = []
-
-    def update_target_from_model(self):
-        #Update the target model from the base model
-        self.model_target.load_state_dict(self.model.state_dict())
 
     def action(self, state):
         if np.random.rand() <= self.epsilon:
@@ -112,17 +106,15 @@ class DoubleDeepQNetwork():
             nst = np.append( nst, np_array[i,3], axis=0)
         st_predict = self.model(torch.Tensor(st).to(self.device)).detach().cpu().numpy() #Here is the speedup! I can predict on the ENTIRE batch
         nst_predict = self.model(torch.Tensor(nst).to(self.device)).detach().cpu().numpy()
-        nst_predict_target = self.model_target(torch.Tensor(nst).to(self.device)).detach().cpu().numpy() #Predict from the TARGET
         index = 0
         for state, action, reward, nstate, done in minibatch:
             x.append(state)
             #Predict from state
-            nst_action_predict_target = nst_predict_target[index]
             nst_action_predict_model = nst_predict[index]
             if done == True: #Terminal: Just assign reward much like {* (not done) - QB[state][action]}
                 target = reward
             else:   #Non terminal
-                target = reward + self.gamma * nst_action_predict_target[np.argmax(nst_action_predict_model)] #Using Q to get T is Double DQN
+                target = reward + self.gamma * np.amax(nst_action_predict_model)
             target_f = st_predict[index]
             target_f[action] = target
             y.append(target_f)
@@ -162,7 +154,7 @@ class DoubleDeepQNetwork():
 #Create the agents
 nS = envCartPole.observation_space.shape[0] #This is only 4
 nA = envCartPole.action_space.n #Actions
-dqn = DoubleDeepQNetwork(nS, nA, learning_rate(), discount_rate(), 1, 0.001, 0.995, 'cuda:{}'.format(gpu_num))
+dqn = DeepQNetwork(nS, nA, learning_rate(), discount_rate(), 1, 0.001, 0.995, 'cuda:{}'.format(gpu_num))
 
 batch_size = batch_size()
 
@@ -203,9 +195,6 @@ for e in tqdm(range(EPISODES)): #*****#
             rewards.append(tot_rewards)
             epsilons.append(dqn.epsilon)
             break # stop the episode
-            
-    #Update the weights after each episode (You can configure this for x steps as well
-    dqn.update_target_from_model()
 
 plt.plot(dqn.q_value_estimate_each_period)
 plt.savefig('./results/exp_{}_Q_value_estimates_per_step.png'.format(exp_idx), dpi=300)

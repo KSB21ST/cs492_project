@@ -226,4 +226,4 @@ for e_test in range(TEST_Episodes):
             epsilons.append(0) #We are doing full exploit
             print("episode: {}/{}, score: {}, e: {}"
                   .format(e_test, TEST_Episodes, tot_rewards, 0))
-            break;
+            break
