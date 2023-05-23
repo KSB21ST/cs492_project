@@ -1,0 +1,8 @@
+exp_idx: 3
+Random Seed: 3898
+Training complete. Testing started...
+episode: 0/5, score: 100.0, e: 0
+episode: 1/5, score: 105.0, e: 0
+episode: 2/5, score: 105.0, e: 0
+episode: 3/5, score: 99.0, e: 0
+episode: 4/5, score: 106.0, e: 0

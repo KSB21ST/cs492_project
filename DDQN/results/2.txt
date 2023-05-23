@@ -1,4 +1,5 @@
-exp_idx: 3
+exp_idx: 2
+Random Seed: 926
 Training complete. Testing started...
 episode: 0/5, score: 210.0, e: 0
 episode: 1/5, score: 210.0, e: 0

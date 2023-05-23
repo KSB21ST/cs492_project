@@ -32,7 +32,7 @@ envCartPole = gym.make('CartPole-v1')
 envCartPole.seed(random_seed)
 envCartPole.action_space.seed(random_seed)
 
-EPISODES = 100
+EPISODES = 1000
 
 def discount_rate(): #Gamma
     return 0.95
