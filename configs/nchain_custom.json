@@ -1,8 +1,9 @@
 {
   "env": [
     {
-      "name": ["Catcher-PLE-v0"],
-      "max_episode_steps": [2000],
+      "name": ["NChain-v1"],
+      "cfg": [{"n": [4]}],
+      "max_episode_steps": [-1],
       "input_type": ["feature"]
     }
   ],
@@ -12,12 +13,12 @@
     },
     {
       "name": ["MaxminDQN", "AveragedDQN"],
-      "target_networks_num": [2,3,4,5,6,7,8,9]
+      "target_networks_num": [4]
     }
   ],
-  "train_steps": [3.5e6],
-  "test_per_episodes": [-1],
-  "device": ["cuda:2"],
+  "train_steps": [5e3],
+  "test_per_episodes": [10],
+  "device": ["cuda:3"],
   "hidden_layers": [[64,64]],
   "memory_type": ["FiniteReplay"],
   "memory_size": [1e4],
@@ -31,17 +32,17 @@
   "optimizer": [
     {
       "name": ["RMSprop"],
-      "kwargs": [{"lr": [1e-3, 3e-4, 1e-4, 3e-5, 1e-5]}]
+      "kwargs": [{"lr": [3e-4]}]
     }
   ],
   "batch_size": [32],
   "display_interval": [100],
-  "rolling_score_window": [{"Train": [100], "Test": [10]}],
+  "rolling_score_window": [{"Train": [20], "Test": [5]}],
   "discount": [0.99],
   "seed": [1],
   "show_tb": [false],
-  "gradient_clip": [5],
-  "target_network_update_steps": [200],
+  "gradient_clip": [-1],
+  "target_network_update_steps": [100],
   "network_update_steps": [1],
   "generate_random_seed": [true]
 }

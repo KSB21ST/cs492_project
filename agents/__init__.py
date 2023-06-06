@@ -3,6 +3,7 @@ from .VanillaDQN import VanillaDQN
 from .DQN import DQN
 from .DDQN import DDQN
 from .MaxminDQN import MaxminDQN
+from .NMIXDQN import NMIX
 from .EnsembleDQN import EnsembleDQN
 from .AveragedDQN import AveragedDQN
 from .BootstrappedDQN import BootstrappedDQN

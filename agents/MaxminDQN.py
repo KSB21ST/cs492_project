@@ -41,7 +41,7 @@ class MaxminDQN(VanillaDQN):
         q_min = torch.min(q_min, q)
       q_next = q_min.max(1)[0]
       q_target = batch.reward + self.discount * q_next * batch.mask
-    return q_target
+    return q_target #torch.Size([32])
   
   def get_action_selection_q_values(self, state):
     q_min = self.Q_net[0](state)

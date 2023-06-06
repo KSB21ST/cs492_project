@@ -22,7 +22,7 @@
   ],
   "train_steps": [5e6],
   "test_per_episodes": [-1],
-  "device": ["cpu"],
+  "device": ["cuda:1"],
   "feature_dim": [128],
   "hidden_layers": [[]],
   "memory_type": ["FiniteReplay"],

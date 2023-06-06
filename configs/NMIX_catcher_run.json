@@ -8,16 +8,13 @@
   ],
   "agent": [
     {
-      "name": ["DQN", "DDQN"]
-    },
-    {
-      "name": ["MaxminDQN", "AveragedDQN"],
-      "target_networks_num": [2,3,4,5,6,7,8,9]
+      "name": ["NMIX"],
+      "target_networks_num": [2, 4]
     }
   ],
   "train_steps": [3.5e6],
   "test_per_episodes": [-1],
-  "device": ["cuda:2"],
+  "device": ["cuda:0"],
   "hidden_layers": [[64,64]],
   "memory_type": ["FiniteReplay"],
   "memory_size": [1e4],

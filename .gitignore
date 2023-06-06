@@ -19,6 +19,9 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+wandb/
+logs/
+__pycache__/
 develop-eggs/
 dist/
 downloads/

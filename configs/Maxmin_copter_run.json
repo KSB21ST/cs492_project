@@ -1,8 +1,8 @@
 {
   "env": [
     {
-      "name": ["Catcher-PLE-v0"],
-      "max_episode_steps": [2000],
+      "name": ["Pixelcopter-PLE-v0"],
+      "max_episode_steps": [500],
       "input_type": ["feature"]
     }
   ],
@@ -12,12 +12,12 @@
     },
     {
       "name": ["MaxminDQN", "AveragedDQN"],
-      "target_networks_num": [2,3,4,5,6,7,8,9]
+      "target_networks_num": [2,4,8]
     }
   ],
-  "train_steps": [3.5e6],
+  "train_steps": [2e6],
   "test_per_episodes": [-1],
-  "device": ["cuda:2"],
+  "device": ["cuda:3"],
   "hidden_layers": [[64,64]],
   "memory_type": ["FiniteReplay"],
   "memory_size": [1e4],

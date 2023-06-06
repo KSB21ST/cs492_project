@@ -1,9 +1,9 @@
 {
   "env": [
     {
-      "name": ["Catcher-PLE-v0"],
-      "max_episode_steps": [2000],
-      "input_type": ["feature"]
+      "name": ["Asterix-MinAtar-v0"],
+      "max_episode_steps": [-1],
+      "input_type": ["pixel"]
     }
   ],
   "agent": [
@@ -12,36 +12,37 @@
     },
     {
       "name": ["MaxminDQN", "AveragedDQN"],
-      "target_networks_num": [2,3,4,5,6,7,8,9]
+      "target_networks_num": [2, 4, 8]
     }
   ],
-  "train_steps": [3.5e6],
+  "train_steps": [5e6],
   "test_per_episodes": [-1],
-  "device": ["cuda:2"],
-  "hidden_layers": [[64,64]],
+  "device": ["cuda:1"],
+  "feature_dim": [128],
+  "hidden_layers": [[]],
   "memory_type": ["FiniteReplay"],
-  "memory_size": [1e4],
+  "memory_size": [1e5],
   "exploration_type": ["LinearEpsilonGreedy"],
-  "exploration_steps": [1e3],
-  "epsilon_steps": [1e3],
+  "exploration_steps": [5e3],
+  "epsilon_steps": [1e5],
   "epsilon_start": [1.0],
-  "epsilon_end": [0.01],
+  "epsilon_end": [0.1],
   "epsilon_decay": [0.999],
-  "loss": ["MSELoss"],
+  "loss": ["SmoothL1Loss"],
   "optimizer": [
     {
       "name": ["RMSprop"],
-      "kwargs": [{"lr": [1e-3, 3e-4, 1e-4, 3e-5, 1e-5]}]
+      "kwargs": [{"lr": [3e-3, 1e-3, 3e-4, 1e-4, 3e-5], "alpha": [0.95], "centered": [true], "eps": [0.01]}]
     }
   ],
   "batch_size": [32],
-  "display_interval": [100],
+  "display_interval": [1000],
   "rolling_score_window": [{"Train": [100], "Test": [10]}],
   "discount": [0.99],
   "seed": [1],
   "show_tb": [false],
-  "gradient_clip": [5],
-  "target_network_update_steps": [200],
+  "gradient_clip": [-1],
+  "target_network_update_steps": [1000],
   "network_update_steps": [1],
   "generate_random_seed": [true]
 }
