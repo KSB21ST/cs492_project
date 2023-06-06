@@ -1,3 +1,5 @@
+import wandb
+
 from envs.env import *
 from utils.helper import *
 from agents.BaseAgent import *
@@ -74,6 +76,8 @@ class VanillaDQN(BaseAgent):
     # Set log dict
     for key in ['state', 'next_state', 'action', 'reward', 'done', 'episode_return', 'episode_step_count']:
       setattr(self, key, {'Train': None, 'Test': None})
+    self.q_value_estimate_each_period = []
+
 
   def createNN(self, input_type):
     # Set feature network
@@ -123,6 +127,13 @@ class VanillaDQN(BaseAgent):
       # Run for one episode
       self.run_episode(mode, render)
 
+  def record_q_value(self):
+    minibatch = self.replay.sample(['state', 'action', 'reward', 'next_state', 'mask'], self.cfg['batch_size'])
+    q, q_target = self.compute_q(minibatch), self.compute_q_target(minibatch)
+    q=q.detach().cpu().numpy()
+    self.q_value_estimate_each_period.append(np.mean(q))
+    
+  
   def run_episode(self, mode, render):
     while not self.done[mode]:
       self.action[mode] = self.get_action(mode)
@@ -140,6 +151,8 @@ class VanillaDQN(BaseAgent):
         # Update policy
         if self.time_to_learn():
           self.learn()
+
+          self.record_q_value()
         # Update target Q network: used only in DQN variants
         self.update_target_net()
         self.step_count += 1
@@ -148,6 +161,9 @@ class VanillaDQN(BaseAgent):
       self.original_state = next_state
     # End of one episode
     self.save_episode_result(mode)
+
+
+
     # Reset environment
     self.reset_game(mode)
     if mode == 'Train':
@@ -155,13 +171,19 @@ class VanillaDQN(BaseAgent):
 
   def save_episode_result(self, mode):
     self.episode_return_list[mode].append(self.episode_return[mode])
+    q_value=0
+    if len(self.q_value_estimate_each_period) !=0:
+      q_value=self.q_value_estimate_each_period[-1]
     rolling_score = np.mean(self.episode_return_list[mode][-1 * self.rolling_score_window[mode]:])
     result_dict = {'Env': self.env_name,
                    'Agent': self.agent_name,
                    'Episode': self.episode_count, 
                    'Step': self.step_count, 
                    'Return': self.episode_return[mode],
-                   'Average Return': rolling_score}
+                   'Average Return': rolling_score,
+                   'QValue': q_value
+                   }
+    wandb.log(result_dict)
     self.result[mode].append(result_dict)
     if self.show_tb:
       self.logger.add_scalar(f'{mode}_Return', self.episode_return[mode], self.step_count)
