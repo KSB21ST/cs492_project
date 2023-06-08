@@ -214,9 +214,10 @@ def memory_info(exp, file_name='log.txt', runs=1, nbins=10, max_line_length=1000
     print(f'{exp}: no memory info!')
 
 if __name__ == "__main__":
-  for agent_config in os.listdir('./configs/'):
+    agent_config = 'Maxmin_copter_DJB.json'
+#   for agent_config in os.listdir('./configs/'):
     if not '.json' in agent_config:
-      continue
+        print('No such config file')
     config_file = os.path.join('./configs/', agent_config)
     sweeper = Sweeper(config_file)
     # sweeper.print_config_dict(sweeper.config_dicts)

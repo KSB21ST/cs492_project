@@ -5,6 +5,7 @@ from components.replay import *
 from components.network import *
 from components.normalizer import *
 import components.exploration
+import wandb
 
 
 class VanillaDQN(BaseAgent):
@@ -74,6 +75,9 @@ class VanillaDQN(BaseAgent):
     # Set log dict
     for key in ['state', 'next_state', 'action', 'reward', 'done', 'episode_return', 'episode_step_count']:
       setattr(self, key, {'Train': None, 'Test': None})
+    self.action_probs = []
+    self.opt_distance = 0
+    self.q_value_estimate_each_period = []
 
   def createNN(self, input_type):
     # Set feature network
@@ -122,6 +126,12 @@ class VanillaDQN(BaseAgent):
       self.set_net_mode(mode)
       # Run for one episode
       self.run_episode(mode, render)
+      
+  def record_q_value(self):
+    minibatch = self.replay.sample(['state', 'action', 'reward', 'next_state', 'mask'], self.cfg['batch_size'])
+    q, q_target = self.compute_q(minibatch), self.compute_q_target(minibatch)
+    q=q.detach().cpu().numpy()
+    self.q_value_estimate_each_period.append(np.mean(q))
 
   def run_episode(self, mode, render):
     while not self.done[mode]:
@@ -140,6 +150,7 @@ class VanillaDQN(BaseAgent):
         # Update policy
         if self.time_to_learn():
           self.learn()
+          self.record_q_value()
         # Update target Q network: used only in DQN variants
         self.update_target_net()
         self.step_count += 1
@@ -147,6 +158,13 @@ class VanillaDQN(BaseAgent):
       self.state[mode] = self.next_state[mode]
       self.original_state = next_state
     # End of one episode
+    if self.cfg['env']['name'] == 'NChain-v1':
+      left_count =  self.action_probs.count(0)
+      right_count =  self.action_probs.count(1)
+      assert (left_count + right_count) == len(self.action_probs), 'action space doesn match.'
+      left_prob = left_count/len(self.action_probs)
+      self.opt_distance = abs(left_prob - 0.95)
+      self.action_probs = []
     self.save_episode_result(mode)
     # Reset environment
     self.reset_game(mode)
@@ -154,6 +172,9 @@ class VanillaDQN(BaseAgent):
       self.episode_count += 1
 
   def save_episode_result(self, mode):
+    q_value=0
+    if len(self.q_value_estimate_each_period) !=0:
+      q_value=self.q_value_estimate_each_period[-1]
     self.episode_return_list[mode].append(self.episode_return[mode])
     rolling_score = np.mean(self.episode_return_list[mode][-1 * self.rolling_score_window[mode]:])
     result_dict = {'Env': self.env_name,
@@ -161,8 +182,16 @@ class VanillaDQN(BaseAgent):
                    'Episode': self.episode_count, 
                    'Step': self.step_count, 
                    'Return': self.episode_return[mode],
-                   'Average Return': rolling_score}
+                   'Average Return': rolling_score,
+                   }
     self.result[mode].append(result_dict)
+    wandb.log({'Episode': self.episode_count, 
+              'Step': self.step_count, 
+              'Return': self.episode_return[mode],
+              'Average Return': rolling_score,
+              'Distance of training policy to optimal policy': self.opt_distance,
+              'QValue': q_value
+              })
     if self.show_tb:
       self.logger.add_scalar(f'{mode}_Return', self.episode_return[mode], self.step_count)
       self.logger.add_scalar(f'{mode}_Average_Return', rolling_score, self.step_count)
@@ -185,11 +214,12 @@ class VanillaDQN(BaseAgent):
     '''
     state = to_tensor(self.state[mode], device=self.device)
     state = state.unsqueeze(0) # Add a batch dimension (Batch, Channel, Height, Width)
-    q_values = self.get_action_selection_q_values(state)
+    q_values = self.get_action_selection_q_values(state) # shape: (self.k, action_space)
     if mode == 'Test':
       action = np.argmax(q_values) # During test, select best action
     elif mode == 'Train':
       action = self.exploration.select_action(q_values, self.step_count)
+    self.action_probs.append(action)
     return action
 
   def time_to_learn(self):

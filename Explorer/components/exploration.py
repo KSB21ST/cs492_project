@@ -51,6 +51,17 @@ class LinearEpsilonGreedy(BaseExploration):
   def get_epsilon(self, step_count):
     return self.bound(self.start + step_count * self.inc, self.end)
 
+class LinearEpsilonGreedy_NMix(LinearEpsilonGreedy):
+    def __init__(self, exploration_steps, epsilon):
+        super().__init__(exploration_steps, epsilon)
+    
+    def select_action(self, q_values, step_count, q_max_min_action):
+        self.epsilon = self.bound(self.start + step_count * self.inc, self.end)
+        if np.random.rand() < self.epsilon or step_count <= self.exploration_steps:
+          action = np.random.randint(0, len(q_values))
+        else:
+          action = q_max_min_action
+        return action
 
 class ExponentialEpsilonGreedy(BaseExploration):
   '''

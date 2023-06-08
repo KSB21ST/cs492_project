@@ -10,6 +10,7 @@ from .NoisyNetDQN import NoisyNetDQN
 from .LSVI_PHE import LSVI_PHE
 from .MeDQN_Real import MeDQN_Real
 from .MeDQN_Uniform import MeDQN_Uniform
+from .NMix import NMixDQN
 
 from .REINFORCE import REINFORCE
 from .ActorCritic import ActorCritic

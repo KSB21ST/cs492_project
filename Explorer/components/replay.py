@@ -76,7 +76,9 @@ class FiniteReplay(object):
   def sample(self, keys, batch_size, detach=False):
     # Sampling with replacement
     idxs = np.random.randint(0, self.size(), size=batch_size)
+
     data = [[getattr(self, k)[idx] for idx in idxs] for k in keys]
+#     print(data)
     data = map(lambda x: torch.stack(x), data)
     if detach:
       data = map(lambda x: x.detach(), data)
