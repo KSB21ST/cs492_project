@@ -1,0 +1,1 @@
+parallel --eta --ungroup --jobs 120 -a run_avg.txt

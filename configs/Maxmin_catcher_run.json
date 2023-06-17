@@ -11,7 +11,7 @@
       "name": ["DQN", "DDQN"]
     },
     {
-      "name": ["MaxminDQN", "AveragedDQN"],
+      "name": ["MaxminDQN", "AveragedDQN", "NMIX"],
       "target_networks_num": [2,4,8]
     }
   ],

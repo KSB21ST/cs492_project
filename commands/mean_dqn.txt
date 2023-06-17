@@ -1,0 +1,6 @@
+python main.py --config_file ./configs/Maxmin_catcher_run.json --wandb_mode online --config_idx 17 --seed 0 --qvalue false --device cuda:5
+python main.py --config_file ./configs/Maxmin_catcher_run.json --wandb_mode online --config_idx 17 --seed 1 --qvalue false --device cuda:5
+python main.py --config_file ./configs/Maxmin_copter_run.json --wandb_mode online --config_idx 17 --seed 0 --qvalue false --device cuda:5
+python main.py --config_file ./configs/Maxmin_copter_run.json --wandb_mode online --config_idx 17 --seed 1 --qvalue false --device cuda:5
+python main.py --config_file ./configs/Maxmin_minatar_run.json --wandb_mode online --config_idx 17 --seed 0 --qvalue false --device cuda:5
+python main.py --config_file ./configs/Maxmin_minatar_run.json --wandb_mode online --config_idx 17 --seed 1 --qvalue false --device cuda:5

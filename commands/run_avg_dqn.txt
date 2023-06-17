@@ -1,0 +1,2 @@
+parallel --eta --ungroup --jobs 120 -a mean_dqn.txt
+parallel --eta --ungroup --jobs 120 -a mean_ddqn.txt

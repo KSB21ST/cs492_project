@@ -12,7 +12,10 @@ def main(argv):
   parser.add_argument('--config_file', type=str, default='./configs/catcher.json', help='Configuration file for the chosen model')
   parser.add_argument('--config_idx', type=int, default=1, help='Configuration index')
   parser.add_argument('--slurm_dir', type=str, default='', help='slurm tempory directory')
+  parser.add_argument('--seed', type=str, default='', help='seed to run same model')
   parser.add_argument("--wandb_mode", default="disabled", choices=["online", "offline", "disabled"])
+  parser.add_argument("--qvalue", default="true", choices=["true", "false"])
+  parser.add_argument("--device", type=str, default="cuda:5", help='gpu device number')
   args = parser.parse_args()
   
   sweeper = Sweeper(args.config_file)
@@ -40,6 +43,8 @@ def main(argv):
   cfg['test_log_path'] = cfg['logs_dir'] + 'result_Test.feather'
   cfg['model_path'] = cfg['logs_dir'] + 'model.pt'
   cfg['cfg_path'] = cfg['logs_dir'] + 'config.json'
+  cfg['qvalue'] = args.qvalue
+  cfg['device'] = args.device
 
   
   wandb.login()
@@ -47,8 +52,9 @@ def main(argv):
     project='qoverestimation',
     config=cfg,
     mode=args.wandb_mode,
-    entity="ksb21st",
-    name=cfg['agent']['name'] + '_' + cfg['env']['name'] + '_' + str(cfg['config_idx']) + '_' + str(cfg['agent']['target_networks_num']) + '_' + str(cfg['optimizer']['kwargs']['lr'])
+    group='NMIX_opt',
+    entity="qoverestimation",
+    name=cfg['agent']['name'] + '_' + args.seed + '_' + cfg['env']['name'] + '_' + str(cfg['config_idx']) + '_' + str(cfg['optimizer']['kwargs']['lr'])
   )
 
   exp = Experiment(cfg)

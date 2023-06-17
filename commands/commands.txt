@@ -1,0 +1,8 @@
+python main.py --config_file ./configs/NMIX_catcher_run.json --wandb_mode online --config_idx 5 --seed 0 --qvalue true
+python main.py --config_file ./configs/NMIX_catcher_run.json --wandb_mode online --config_idx 5 --seed 1 --qvalue false
+python main.py --config_file ./configs/NMIX_catcher_run.json --wandb_mode online --config_idx 6 --seed 0 --qvalue true
+python main.py --config_file ./configs/NMIX_catcher_run.json --wandb_mode online --config_idx 6 --seed 1 --qvalue false
+python main.py --config_file ./configs/NMIX_minatar_run.json --wandb_mode online --config_idx 4 --seed 0 --qvalue true
+python main.py --config_file ./configs/NMIX_minatar_run.json --wandb_mode online --config_idx 4 --seed 1 --qvalue false
+python main.py --config_file ./configs/NMIX_minatar_run.json --wandb_mode online --config_idx 5 --seed 0 --qvalue true
+python main.py --config_file ./configs/NMIX_minatar_run.json --wandb_mode online --config_idx 5 --seed 1 --qvalue false

@@ -1,0 +1,2 @@
+python main.py --config_file ./configs/NMIX_copter_run.json --wandb_mode online --config_idx 4 --seed 0 --qvalue false --device cuda:4
+python main.py --config_file ./configs/NMIX_copter_run.json --wandb_mode online --config_idx 5 --seed 0 --qvalue false --device cuda:4

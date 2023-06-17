@@ -46,7 +46,7 @@ class Experiment(object):
     # Train && Test
     self.agent.run_steps(render=self.cfg['render'])
     # Save model
-    # self.save_model()
+    self.save_model()
     self.end_time = time.time()
     self.agent.logger.info(f'Memory usage: {rss_memory_usage():.2f} MB')
     self.agent.logger.info(f'Time elapsed: {(self.end_time-self.start_time)/60:.2f} minutes')

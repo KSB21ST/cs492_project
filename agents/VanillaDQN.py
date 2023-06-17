@@ -6,6 +6,7 @@ from components.network import *
 from components.normalizer import *
 import components.exploration
 import wandb
+import timeit
 
 
 class VanillaDQN(BaseAgent):
@@ -77,6 +78,8 @@ class VanillaDQN(BaseAgent):
       setattr(self, key, {'Train': None, 'Test': None})
     self.action_probs = []
     self.opt_distance = 0
+    self.q_value_estimate_each_period = []
+    self.timer = timeit.default_timer
 
   def createNN(self, input_type):
     # Set feature network
@@ -116,15 +119,25 @@ class VanillaDQN(BaseAgent):
     self.start_time = time.time()
     self.reset_game('Train')
     self.reset_game('Test')
+    last_checkpoint_time = self.timer()
     while self.step_count < self.train_steps:
       if mode == 'Train' and self.test_per_episodes > 0 and self.episode_count % self.test_per_episodes == 0:
         mode = 'Test'
       else:
         mode = 'Train'
+        if self.timer() - last_checkpoint_time > 120 * 60:  # Save every 120 min.
+          self.save_model(self.cfg['model_path'] + str(self.step_count))
+          last_checkpoint_time = self.timer()
       # Set Q network to training/evaluation mode
       self.set_net_mode(mode)
       # Run for one episode
       self.run_episode(mode, render)
+      
+  def record_q_value(self):
+    minibatch = self.replay.sample(['state', 'action', 'reward', 'next_state', 'mask'], self.cfg['batch_size'])
+    q, q_target = self.compute_q(minibatch), self.compute_q_target(minibatch)
+    q=q.detach().cpu().numpy()
+    self.q_value_estimate_each_period.append(np.mean(q))
 
   def run_episode(self, mode, render):
     while not self.done[mode]:
@@ -143,6 +156,8 @@ class VanillaDQN(BaseAgent):
         # Update policy
         if self.time_to_learn():
           self.learn()
+          if(self.cfg['qvalue'] == 'true'):
+            self.record_q_value()
         # Update target Q network: used only in DQN variants
         self.update_target_net()
         self.step_count += 1
@@ -165,6 +180,10 @@ class VanillaDQN(BaseAgent):
 
   def save_episode_result(self, mode):
     self.episode_return_list[mode].append(self.episode_return[mode])
+    q_value=0
+    if len(self.q_value_estimate_each_period) !=0:
+      if(self.cfg['qvalue'] == 'true'):
+        q_value=self.q_value_estimate_each_period[-1]
     rolling_score = np.mean(self.episode_return_list[mode][-1 * self.rolling_score_window[mode]:])
     result_dict = {'Env': self.env_name,
                    'Agent': self.agent_name,
@@ -179,6 +198,7 @@ class VanillaDQN(BaseAgent):
               'Return': self.episode_return[mode],
               'Average Return': rolling_score,
               'Distance of training policy to optimal policy': self.opt_distance,
+              'QValue': q_value
               })
     if self.show_tb:
       self.logger.add_scalar(f'{mode}_Return', self.episode_return[mode], self.step_count)
