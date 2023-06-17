@@ -42,6 +42,15 @@ Code based from [Explorer](https://github.com/qlan3/Explorer).
 
 ## Experiments
 
+### Environment installation
+
+Environment based from [gym-games](https://github.com/qlan3/gym-games).
+
+``` bash
+cd gym-games
+python setup.py install
+```
+
 ### Train && Test
 
 All hyperparameters including parameters for grid search are stored in a configuration file in directory `configs`. To run an experiment, a configuration index is first used to generate a configuration dict corresponding to this specific configuration index. Then we run an experiment defined by this configuration dict.
@@ -78,14 +87,6 @@ done
 parallel --eta --ungroup python main.py --config_file ./configs/Maxmin_catcher_run.json --config_idx {1} ::: $(seq 1 55)
 ```
 For more information, please check the `run.sh` file and `commands/` folder.
-# Environment installation
-
-Environment based from [gym-games](https://github.com/qlan3/gym-games).
-
-``` bash
-cd gym-games
-python setup.py install
-```
 
 # Acknowledgements
 
