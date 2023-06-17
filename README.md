@@ -66,7 +66,7 @@ The output will be:
 Then we run through all configuration indexes from `1` to `55`. The simplest way is using a bash script:
 
 ``` bash
-for index in {1..12}
+for index in {1..55}
 do
   python main.py --config_file ./configs/Maxmin_catcher_run.json --config_idx $index
 done
@@ -77,7 +77,7 @@ done
 ``` bash
 parallel --eta --ungroup python main.py --config_file ./configs/Maxmin_catcher_run.json --config_idx {1} ::: $(seq 1 55)
 ```
-
+For more information, please check the `run.sh` file and `commands/` folder.
 # Environment installation
 
 Environment based from [gym-games](https://github.com/qlan3/gym-games).
