@@ -1,6 +1,3 @@
-# Run single experiment
-python main.py --config_file ./configs/Maxmin_catcher_run.json --wandb_mode disabled --config_idx 1
-
 # Experiment 1 & 2: Run all DQN, DDQN, AveragedDQN, Maxmin avg_mean experiments
 parallel --eta --ungroup --jobs 120 -a run_avg.txt
 

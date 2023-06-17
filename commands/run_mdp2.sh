@@ -1,1 +1,0 @@
-parallel --eta --ungroup python main.py --config_file ./configs/nchain_custom.json --wandb_mode disabled --device cuda:0 --config_idx {1} ::: $(seq 1 11)
